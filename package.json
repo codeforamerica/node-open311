@@ -4,16 +4,20 @@
   "version": "0.0.11",
   "homepage": "https://github.com/codeforamerica/node-open311",
   "author": "Mark Headd <mheadd@gmail.com> (http://civic.io)",
-  "contributors": [ 
+  "contributors": [
     {
       "name": "Ben Sheldon",
       "email": "ben@codeforamerica.org"
-    } 
+    },
+    {
+      "name": "Milo van der Linden",
+      "email": "milo@dogodigi.net"
+    }
   ],
   "main": "./open311",
-  "repository" : { 
-    "type":"git",
-    "url":"https://github.com/codeforamerica/node-open311" 
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeforamerica/node-open311"
   },
   "license": "BSD",
   "engines": {
@@ -23,13 +27,13 @@
     "test": "./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
+    "lodash": "~3.0.0",
     "request": "~2.11.0",
-    "lodash": "~0.6.1",
-    "sparkxml": "git://github.com/codeforamerica/node-sparkxml.git",
-    "xml2json": "~0.2.4"
+    "sparkxml": "git://github.com/codeforeindhoven/node-sparkxml.git",
+    "xml2json": "^0.9.0"
   },
   "devDependencies": {
-    "mocha":  "~1.4.1",
+    "mocha": "~1.4.1",
     "chai": "~1.2.0",
     "sinon": "~1.4.2"
   }
