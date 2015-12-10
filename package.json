@@ -29,7 +29,7 @@
   "dependencies": {
     "lodash": "~3.0.0",
     "request": "~2.11.0",
-    "sparkxml": "^0.1.3"
+    "sparkxml": "^0.1.3",
     "xml2json": "^0.9.0"
   },
   "devDependencies": {
