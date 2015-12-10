@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var should = require('chai').should();
 var sinon = require('sinon');
 var Open311 = require('../open311');
 var request = require('request');
@@ -49,18 +50,18 @@ describe('Open311()', function() {
         "discovery": "http://311.baltimorecity.gov/open311/discovery.json",
         "endpoint": "http://311.baltimorecity.gov/open311/v2/"
       }];
-      
+
       it("should automatically hydrate the instance with the options", function(done) {
         open311 = new Open311("baltimore");
-        
+
         expect(open311.id).to.equal('baltimore');
         expect(open311.name).to.equal('Baltimore, MD');
         expect(open311.vendor).to.equal('connectedbits');
-        expect(open311.discovery).to.equal('http://311.baltimorecity.gov/open311/discovery.json');                        
-        expect(open311.endpoint).to.equal('http://311.baltimorecity.gov/open311/v2/');        
+        expect(open311.discovery).to.equal('http://311.baltimorecity.gov/open311/discovery.json');
+        expect(open311.endpoint).to.equal('http://311.baltimorecity.gov/open311/v2/');
         done();
       });
-      
+
       it("should throw an error if the city is not in our big list of cities", function(done) {
         expect(function() { new Open311("katmandu"); }).to.throw('"katmandu" is not in our list of prepopulatable endpoints');
         done();
@@ -94,58 +95,58 @@ describe('.serviceDiscovery()', function() {
       expect(request.get.firstCall.args[0].url).to.equal('http://app.311.dc.gov/cwi/Open311/discovery.xml');
       done();
     });
-    
+
     it('should parse XML when discovery.xml', function(done) {
       request.get.callsArgWith(1, true, {statusCode: 200}, xml);
       sinon.spy(spark, 'parseXml');
-    
+
       open311.serviceDiscovery(function(err, data) {});
-      expect(spark.parseXml.called).to.be.true;
-    
-      spark.parseXml.restore(); // cleanup 
+      expect(spark.parseXml.called).to.equal(true);
+
+      spark.parseXml.restore(); // cleanup
       done();
     });
-    
+
     it('should parse JSON when discovery.json', function(done) {
       open311.discovery = 'https://mayors24.cityofboston.gov/open311/discovery.json';
       request.get.callsArgWith(1, true, {statusCode: 200}, "{}");
       sinon.spy(JSON, 'parse');
-      
+
       open311.serviceDiscovery(function(err, data) {});
-      expect(JSON.parse.called).to.be.true;
-    
-      JSON.parse.restore(); // cleanup 
+      expect(JSON.parse.called).to.equal(true);
+
+      JSON.parse.restore(); // cleanup
       done();
     });
-    
+
     it('when options.cache = true, it should set the endpoint url and add a trailing slash (if necessary)', function(done) {
       open311.discovery = 'http://app.311.dc.gov/cwi/Open311/discovery.xml';
       request.get.callsArgWith(1, true, {statusCode: 200}, xml);
-      
+
       open311.serviceDiscovery({ cache: true }, function(err, data) {
         expect(open311.endpoint).to.equal('http://app.311.dc.gov/cwi/Open311/v2/');
       });
       done();
     });
-    
+
     it('when options.cache = true, it should set the endpoint url based on options.specification', function(done) {
       open311.discovery = 'http://app.311.dc.gov/cwi/Open311/discovery.xml';
       request.get.callsArgWith(1, true, {statusCode: 200}, xml);
-      
-      open311.serviceDiscovery({ 
+
+      open311.serviceDiscovery({
         cache: true,
-        specification: 'http://wiki.open311.org/GeoReport_v2.1_Draft' 
+        specification: 'http://wiki.open311.org/GeoReport_v2.1_Draft'
       }, function(err, data) {
         expect(open311.endpoint).to.equal('http://app.311.dc.gov/cwi/Open311/');
       });
       done();
     });
-    
+
     it('when options.cache = true, it should set the production/test based on options.type', function(done) {
       open311.discovery = 'https://mayors24.cityofboston.gov/open311/discovery.json';
       request.get.callsArgWith(1, true, {statusCode: 200}, json);
-      
-      open311.serviceDiscovery({ 
+
+      open311.serviceDiscovery({
         cache: true,
         type: 'test',
       }, function(err, data) {
@@ -153,7 +154,7 @@ describe('.serviceDiscovery()', function() {
       });
       done();
     });
-    
+
   });
 
   describe('._get()', function() {
@@ -174,8 +175,8 @@ describe('.serviceDiscovery()', function() {
     });
 
     it('should should allow the `params` argument to be optional', function(done) {
-      open311._get('services', function(err, body) {}) // shouldn't throw an exception
-      done();      
+      open311._get('services', function(err, body) {}); // shouldn't throw an exception
+      done();
     });
 
     it('should correctly format the URL', function(done) {
@@ -209,8 +210,8 @@ describe('.serviceDiscovery()', function() {
     });
 
     it('should should allow the `params` argument to be optional', function(done) {
-      open311._post('services', {}, function(err, body) {}) // shouldn't throw an exception
-      done();      
+      open311._post('services', {}, function(err, body) {}); // shouldn't throw an exception
+      done();
     });
 
     it('should correctly format the URL', function(done) {
@@ -268,11 +269,11 @@ describe('.serviceDiscovery()', function() {
         done();
       });
     });
-    
+
     it("should throw an error if the Endpoint isn't set", function(done) {
-      var open311NoEndpoint = new Open311({});      
+      var open311NoEndpoint = new Open311({});
       expect(
-        function(){ 
+        function(){
           open311NoEndpoint.serviceList(function(err, data) {});
         }
       ).to.throw('You must set set an endpoint URL in your Open311({endpoint: "<URL>"}) object');
@@ -318,7 +319,7 @@ describe('.serviceDiscovery()', function() {
       // Mock request.get to return the XML when called
       request.get.callsArgWith(1, false, {statusCode: 200}, xml);
       open311.serviceDefinition('S0301', function(err, data) {
-        expect(data.service_code).to.exist;
+        should.exist(data.service_code);
         done();
       });
     });
@@ -352,11 +353,11 @@ describe('.serviceDiscovery()', function() {
         done();
       });
     });
-    
+
     it("should throw an error if the Endpoint isn't set", function(done) {
-      var open311NoEndpoint = new Open311({});      
+      var open311NoEndpoint = new Open311({});
       expect(
-        function(){ 
+        function(){
           open311NoEndpoint.serviceDefinition('S0301', function(err, data) {});
         }
       ).to.throw('You must set set an endpoint URL in your Open311({endpoint: "<URL>"}) object');
@@ -383,20 +384,20 @@ describe('.serviceDiscovery()', function() {
     it("should throw an error if the API key isn't set", function(done) {
       var open311NoApiKey = new Open311({
         endpoint: 'https://mayors24test.cityofboston.gov/open311/v2/'
-      });      
+      });
       expect(
-        function(){ 
-          open311NoApiKey.submitRequest({}, function(err, data) {}) 
+        function(){
+          open311NoApiKey.submitRequest({}, function(err, data) {});
         }
       ).to.throw('Submitting a Service Request requires an API Key');
       done();
     });
-    
+
     it("should throw an error if the Endpoint isn't set", function(done) {
-      var open311NoEndpoint = new Open311({});      
+      var open311NoEndpoint = new Open311({});
       expect(
-        function(){ 
-          open311NoEndpoint.submitRequest({}, function(err, data) {}) 
+        function(){
+          open311NoEndpoint.submitRequest({}, function(err, data) {});
         }
       ).to.throw('You must set set an endpoint URL in your Open311({endpoint: "<URL>"}) object');
       done();
@@ -404,11 +405,11 @@ describe('.serviceDiscovery()', function() {
 
     it("should attach this.apiKey to the form data as `api_key`", function(done) {
       open311.submitRequest({}, function(err, data) {});
-      expect(request.post.firstCall.args[0].form['api_key']).to.equal('API_KEY');
+      expect(request.post.firstCall.args[0].form.api_key).to.equal('API_KEY');
       done();
 
     });
-    
+
     it("should parse attributes into the attribute[key]=value format", function(done) {
       open311.submitRequest({
         attributes: {
@@ -419,7 +420,7 @@ describe('.serviceDiscovery()', function() {
       expect(request.post.firstCall.args[0].form).to.contain.keys(['attribute[license_plate]', 'attribute[color]']);
       expect(request.post.firstCall.args[0].form['attribute[license_plate]']).to.equal("A1234567");
       expect(request.post.firstCall.args[0].form['attribute[color]']).to.equal('blue');
-      
+
       done();
 
     });
@@ -431,7 +432,7 @@ describe('.serviceDiscovery()', function() {
       request.post.callsArgWith(1, false, {statusCode: 201}, xml);
       open311.submitRequest({}, function(err, data) {
         expect(JSON.stringify(data)).to.equal(JSON.stringify([{ token: '503fc045901932078800163c' }]));
-        
+
         open311.format = 'json'; //cleanup
         done();
       });
@@ -477,17 +478,17 @@ describe('.serviceDiscovery()', function() {
       request.get.callsArgWith(1, false, {statusCode: 200}, xml);
       open311.token('12345', function(err, data) {
         expect(data[0].token).to.equal(12345);
-        expect(data[0]['service_request_id']).to.equal(638344);
+        expect(data[0].service_request_id).to.equal(638344);
 
         done();
       });
     });
-    
+
     it("should throw an error if the Endpoint isn't set", function(done) {
-      var open311NoEndpoint = new Open311({});      
+      var open311NoEndpoint = new Open311({});
       expect(
-        function(){ 
-          open311NoEndpoint.token('12345', function(err, data) {}) 
+        function(){
+          open311NoEndpoint.token('12345', function(err, data) {});
         }
       ).to.throw('You must set set an endpoint URL in your Open311({endpoint: "<URL>"}) object');
       done();
@@ -557,7 +558,7 @@ describe('.serviceDiscovery()', function() {
       expect(request.get.firstCall.args[0].qs.service_request_id).to.equal('abcde,12345');
       done();
     });
-    
+
     it('should handle arguments of [service_request_ids], params & callback', function(done) {
       open311.serviceRequests(['abcde', 12345], {"extended_attributes": true}, function(err, data) {});
       expect(request.get.firstCall.args[0].url).to.equal('http://app.311.dc.gov/CWI/Open311/v2/requests.xml');
@@ -565,20 +566,20 @@ describe('.serviceDiscovery()', function() {
       expect(request.get.firstCall.args[0].qs.service_request_id).to.equal('abcde,12345');
       done();
     });
-    
+
     it("should throw an error if the Endpoint isn't set", function(done) {
-      var open311NoEndpoint = new Open311({});      
+      var open311NoEndpoint = new Open311({});
       expect(
-        function(){ 
+        function(){
           open311NoEndpoint.serviceRequests(['abcde', 12345], {"extended_attributes": true}, function(err, data) {});
         }
       ).to.throw('You must set set an endpoint URL in your Open311({endpoint: "<URL>"}) object');
       done();
     });
-    
+
     describe('cleaning of individual service requests', function() {
       var xml = fs.readFileSync(__dirname + '/mocks/service-requests.xml', 'utf8');
-      
+
       it('should convert requested_datetime and updated_datetime to Date objects', function(done) {
         request.get.callsArgWith(1, false, {statusCode: 200}, xml);
         open311.serviceRequests(function(err, data) {
